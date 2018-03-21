@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use Yii;
-
 /**
  * This is the model class for table "aeropuertos".
  *
@@ -44,15 +42,15 @@ class Aeropuertos extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'codigo' => 'Codigo',
-            'denominacion' => 'Denominacion',
+            'codigo' => 'Código',
+            'denominacion' => 'Denominación',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getVuelos()
+    public function getVuelosOrigen()
     {
         return $this->hasMany(Vuelos::className(), ['origen_id' => 'id'])->inverseOf('origen');
     }
@@ -60,7 +58,7 @@ class Aeropuertos extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getVuelos0()
+    public function getVuelosDestino()
     {
         return $this->hasMany(Vuelos::className(), ['destino_id' => 'id'])->inverseOf('destino');
     }

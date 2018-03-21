@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use Yii;
-
 /**
  * This is the model class for table "reservas".
  *
@@ -34,8 +32,7 @@ class Reservas extends \yii\db\ActiveRecord
         return [
             [['usuario_id', 'vuelo_id', 'asiento'], 'required'],
             [['usuario_id', 'vuelo_id'], 'default', 'value' => null],
-            [['usuario_id', 'vuelo_id'], 'integer'],
-            [['asiento'], 'number'],
+            [['usuario_id', 'vuelo_id', 'asiento'], 'integer'],
             [['created_at'], 'safe'],
             [['vuelo_id', 'asiento'], 'unique', 'targetAttribute' => ['vuelo_id', 'asiento']],
             [['usuario_id'], 'exist', 'skipOnError' => true, 'targetClass' => Usuarios::className(), 'targetAttribute' => ['usuario_id' => 'id']],
