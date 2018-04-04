@@ -39,15 +39,17 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
+            ['label' => 'Aeropuertos', 'url' => ['aeropuertos/index']],
+            ['label' => 'Compañías', 'url' => ['companias/index']],
+            ['label' => 'Vuelos', 'url' => ['vuelos/index']],
+            ['label' => 'Reservas', 'url' => ['reservas/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
+                    'Logout (' . Yii::$app->user->identity->nombre . ')',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()

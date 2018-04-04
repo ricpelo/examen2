@@ -6,6 +6,11 @@ CREATE TABLE usuarios (
   , password   varchar(255) NOT NULL
 );
 
+INSERT
+  INTO usuarios (nombre, password)
+VALUES ('pepe', crypt('pepe', gen_salt('bf', 11)))
+     , ('juan', crypt('juan', gen_salt('bf', 11)));
+
 DROP TABLE IF EXISTS aeropuertos CASCADE;
 
 CREATE TABLE aeropuertos (
@@ -14,12 +19,23 @@ CREATE TABLE aeropuertos (
   , denominacion varchar(255) NOT NULL
 );
 
+INSERT
+  INTO aeropuertos (codigo, denominacion)
+VALUES ('XRY', 'Jerez')
+     , ('SVQ', 'Sevilla')
+     , ('STD', 'Londres Stansted');
+
 DROP TABLE IF EXISTS companias CASCADE;
 
 CREATE TABLE companias (
     id           bigserial    PRIMARY KEY
   , denominacion varchar(255) NOT NULL
 );
+
+INSERT
+  INTO companias (denominacion)
+VALUES ('Iberia')
+     , ('Ryanair');
 
 DROP TABLE IF EXISTS vuelos CASCADE;
 
@@ -38,6 +54,10 @@ CREATE TABLE vuelos (
   , plazas      numeric(3)   NOT NULL
   , precio      numeric(8,2) NOT NULL
 );
+
+INSERT
+  INTO vuelos (codigo, origen_id, destino_id, compania_id, salida, llegada, plazas, precio)
+VALUES ('IB4341', 1, 2, 1, '2018-04-23 16:35:00', '2018-04-23 19:00:00', 300, 50);
 
 DROP TABLE IF EXISTS reservas CASCADE;
 

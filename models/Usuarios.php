@@ -2,6 +2,9 @@
 
 namespace app\models;
 
+use Yii;
+use yii\web\IdentityInterface;
+
 /**
  * This is the model class for table "usuarios".
  *
@@ -11,7 +14,7 @@ namespace app\models;
  *
  * @property Reservas[] $reservas
  */
-class Usuarios extends \yii\db\ActiveRecord
+class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
 {
     /**
      * {@inheritdoc}
@@ -51,5 +54,32 @@ class Usuarios extends \yii\db\ActiveRecord
     public function getReservas()
     {
         return $this->hasMany(Reservas::className(), ['usuario_id' => 'id'])->inverseOf('usuario');
+    }
+
+    public static function findIdentity($id)
+    {
+        return static::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAuthKey()
+    {
+    }
+
+    public function validateAuthKey($authKey)
+    {
+    }
+
+    public function validatePassword($password)
+    {
+        return Yii::$app->security->validatePassword($password, $this->password);
     }
 }
