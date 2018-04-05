@@ -2,10 +2,8 @@
 
 namespace app\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Vuelos;
 
 /**
  * VuelosSearch represents the model behind the search form of `app\models\Vuelos`.
@@ -18,10 +16,19 @@ class VuelosSearch extends Vuelos
     public function rules()
     {
         return [
-            [['id', 'origen_id', 'destino_id', 'compania_id'], 'integer'],
-            [['codigo', 'salida', 'llegada'], 'safe'],
+            [['codigo', 'origen.codigo', 'destino.codigo'], 'filter', 'filter' => 'mb_strtoupper'],
+            [['salida', 'llegada', 'compania.denominacion'], 'safe'],
             [['plazas', 'precio'], 'number'],
         ];
+    }
+
+    public function attributes()
+    {
+        return array_merge(parent::attributes(), [
+            'origen.codigo',
+            'destino.codigo',
+            'compania.denominacion',
+        ]);
     }
 
     /**
@@ -34,7 +41,7 @@ class VuelosSearch extends Vuelos
     }
 
     /**
-     * Creates data provider instance with search query applied
+     * Creates data provider instance with search query applied.
      *
      * @param array $params
      *
@@ -58,19 +65,39 @@ class VuelosSearch extends Vuelos
             return $dataProvider;
         }
 
+        $query->joinWith(['origen o', 'destino d', 'compania c']);
+
+        $dataProvider->sort->attributes['origen.codigo'] = [
+            'asc' => ['o.codigo' => SORT_ASC],
+            'desc' => ['o.codigo' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['destino.codigo'] = [
+            'asc' => ['d.codigo' => SORT_ASC],
+            'desc' => ['d.codigo' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['compania.denominacion'] = [
+            'asc' => ['c.denominacion' => SORT_ASC],
+            'desc' => ['c.denominacion' => SORT_DESC],
+        ];
+
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'origen_id' => $this->origen_id,
-            'destino_id' => $this->destino_id,
-            'compania_id' => $this->compania_id,
+            'vuelos.codigo' => $this->codigo,
+            'o.codigo' => $this->getAttribute('origen.codigo'),
+            'd.codigo' => $this->getAttribute('destino.codigo'),
             'salida' => $this->salida,
             'llegada' => $this->llegada,
             'plazas' => $this->plazas,
             'precio' => $this->precio,
         ]);
 
-        $query->andFilterWhere(['ilike', 'codigo', $this->codigo]);
+        $query->andFilterWhere([
+            'ilike',
+            'c.denominacion',
+            $this->getAttribute('compania.denominacion'),
+        ]);
 
         return $dataProvider;
     }
