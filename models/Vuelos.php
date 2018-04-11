@@ -22,6 +22,8 @@ namespace app\models;
  */
 class Vuelos extends \yii\db\ActiveRecord
 {
+    public $plazas_libres;
+
     /**
      * {@inheritdoc}
      */
@@ -98,5 +100,16 @@ class Vuelos extends \yii\db\ActiveRecord
     public function getCompania()
     {
         return $this->hasOne(Companias::className(), ['id' => 'compania_id'])->inverseOf('vuelos');
+    }
+
+    public static function find()
+    {
+        return parent::find()
+            ->select([
+                'vuelos.*',
+                'plazas - COUNT(r.id) AS plazas_libres',
+            ])
+            ->joinWith(['reservas r'])
+            ->groupBy('vuelos.id');
     }
 }

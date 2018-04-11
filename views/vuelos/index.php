@@ -19,6 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Vuelos', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
+    <?php Yii::trace($dataProvider->getModels()) ?>
+
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -31,6 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'llegada:datetime',
             'plazas',
             'precio:currency',
+            'plazas_libres',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
