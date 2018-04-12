@@ -71,3 +71,9 @@ CREATE TABLE reservas (
   , created_at timestamp  NOT NULL DEFAULT localtimestamp
   , UNIQUE (vuelo_id, asiento)
 );
+
+CREATE VIEW v_vuelos AS
+  SELECT v.*, c.denominacion AS compania_denominacion, plazas - COUNT(r.id) AS plazas_libres
+    FROM vuelos v LEFT JOIN reservas r ON r.vuelo_id = v.id
+    LEFT JOIN companias c ON v.compania_id = c.id
+GROUP BY v.id, c.denominacion;
