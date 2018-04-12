@@ -2,12 +2,13 @@
 
 namespace app\controllers;
 
-use Yii;
 use app\models\Reservas;
 use app\models\ReservasSearch;
+use Yii;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * ReservasController implements the CRUD actions for Reservas model.
@@ -20,6 +21,16 @@ class ReservasController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'create', 'view'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -46,7 +57,7 @@ class ReservasController extends Controller
 
     /**
      * Displays a single Reservas model.
-     * @param integer $id
+     * @param int $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -61,10 +72,14 @@ class ReservasController extends Controller
      * Creates a new Reservas model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
+     * @param mixed $vuelo_id
      */
-    public function actionCreate()
+    public function actionCreate($vuelo_id)
     {
-        $model = new Reservas();
+        $model = new Reservas([
+            'usuario_id' => Yii::$app->user->id,
+            'vuelo_id' => $vuelo_id,
+        ]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -72,13 +87,14 @@ class ReservasController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'asientosLibres' => $model->vuelo->asientosLibres,
         ]);
     }
 
     /**
      * Updates an existing Reservas model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
+     * @param int $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -98,7 +114,7 @@ class ReservasController extends Controller
     /**
      * Deletes an existing Reservas model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
+     * @param int $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -112,7 +128,7 @@ class ReservasController extends Controller
     /**
      * Finds the Reservas model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
+     * @param int $id
      * @return Reservas the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */

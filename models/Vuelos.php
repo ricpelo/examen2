@@ -112,4 +112,12 @@ class Vuelos extends \yii\db\ActiveRecord
             ->joinWith(['reservas r'])
             ->groupBy('vuelos.id');
     }
+
+    public function getAsientosLibres()
+    {
+        $ocupados = $this->getReservas()->select('asiento')->column();
+        $total = range(1, $this->plazas);
+        $libres = array_diff($total, $ocupados);
+        return array_combine($libres, $libres);
+    }
 }
