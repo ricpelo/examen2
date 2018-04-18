@@ -5,7 +5,6 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Reservas;
 
 /**
  * ReservasSearch represents the model behind the search form of `app\models\Reservas`.
@@ -20,8 +19,13 @@ class ReservasSearch extends Reservas
         return [
             [['id', 'usuario_id', 'vuelo_id'], 'integer'],
             [['asiento'], 'number'],
-            [['created_at'], 'safe'],
+            [['created_at', 'vuelo.codigo'], 'safe'],
         ];
+    }
+
+    public function attributes()
+    {
+        return array_merge(parent::attributes(), ['vuelo.codigo']);
     }
 
     /**
@@ -34,7 +38,7 @@ class ReservasSearch extends Reservas
     }
 
     /**
-     * Creates data provider instance with search query applied
+     * Creates data provider instance with search query applied.
      *
      * @param array $params
      *
@@ -42,7 +46,9 @@ class ReservasSearch extends Reservas
      */
     public function search($params)
     {
-        $query = Reservas::find();
+        $query = Reservas::find()
+            ->leftJoin('vuelos', 'reservas.vuelo_id = vuelos.id')
+            ->where(['usuario_id' => Yii::$app->user->id]);
 
         // add conditions that should always apply here
 
@@ -58,9 +64,14 @@ class ReservasSearch extends Reservas
             return $dataProvider;
         }
 
+        $dataProvider->sort->attributes['vuelo.codigo'] = [
+            'asc' => ['codigo' => SORT_ASC],
+            'desc' => ['codigo' => SORT_DESC],
+        ];
+
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'reservas.id' => $this->id,
             'usuario_id' => $this->usuario_id,
             'vuelo_id' => $this->vuelo_id,
             'asiento' => $this->asiento,
