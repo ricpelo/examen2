@@ -50,7 +50,7 @@ class VuelosSearch extends Vuelos
      */
     public function search($params)
     {
-        $query = Vuelos::find();
+        $query = Vuelos::find()->where('salida > localtimestamp');
 
         // add conditions that should always apply here
 
@@ -67,7 +67,8 @@ class VuelosSearch extends Vuelos
         }
 
         $query->joinWith(['origen o', 'destino d', 'compania c'])
-            ->addGroupBy('o.codigo, d.codigo, c.denominacion');
+            ->addGroupBy('o.codigo, d.codigo, c.denominacion')
+            ->having('plazas - COUNT(r.id) > 0');
 
         $dataProvider->sort->attributes['plazas_libres'] = [
             'asc' => ['plazas_libres' => SORT_ASC],

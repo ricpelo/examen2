@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Reservas;
 use app\models\ReservasSearch;
+use app\models\Vuelos;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -76,6 +77,8 @@ class ReservasController extends Controller
      */
     public function actionCreate($vuelo_id)
     {
+        $this->comprobarVueloDisponible($vuelo_id);
+
         $model = new Reservas([
             'usuario_id' => Yii::$app->user->id,
             'vuelo_id' => $vuelo_id,
@@ -139,5 +142,25 @@ class ReservasController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function comprobarVueloDisponible($vuelo_id)
+    {
+        $vuelo = Vuelos::findOne($vuelo_id);
+
+        if ($vuelo === null) {
+            Yii::$app->session->setFlash('error', 'El vuelo no existe.');
+            return $this->redirect(['vuelos/index']);
+        }
+
+        if (new \DateTime($vuelo->salida) <= new \DateTime()) {
+            Yii::$app->session->setFlash('error', 'El vuelo ya ha salido.');
+            return $this->redirect(['vuelos/index']);
+        }
+
+        if ($vuelo->plazas_libres <= 0) {
+            Yii::$app->session->setFlash('error', 'El vuelo no tiene plazas libres.');
+            return $this->redirect(['vuelos/index']);
+        }
     }
 }
